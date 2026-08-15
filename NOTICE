@@ -1,0 +1,21 @@
+Kubernetes Attune Pack
+Copyright 2026 Attune
+
+This product adapts requirements and concepts from the StackStorm Exchange
+Kubernetes pack by Andrew Moore, with contributions from Michael Ward and other
+StackStorm Exchange contributors:
+
+  https://github.com/StackStorm-Exchange/stackstorm-kubernetes
+  revision d6a52dbf72de7d3e034914299d3ac670d0532c38
+  version 1.0.1
+
+The referenced work is licensed under the Apache License, Version 2.0. It did
+not contain an upstream NOTICE file at the verified revision. This adaptation
+has been substantially changed: generated legacy actions and sensors were
+replaced with a curated Attune action surface using current GA Kubernetes APIs,
+the maintained Python Kubernetes dynamic client, Attune Key credentials, and
+hardened safety controls.
+
+The Kubernetes Python client is Copyright 2014 The Kubernetes Authors and is
+licensed under the Apache License, Version 2.0. It is an installed dependency
+and is not vendored in this repository.

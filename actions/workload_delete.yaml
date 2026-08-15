@@ -1,0 +1,28 @@
+ref: kubernetes.workload_delete
+label: "Delete Workload"
+description: "Delete one apps/v1 workload with exact namespace/name confirmation"
+enabled: true
+runner_type: python
+runtime_version: ">=3.10"
+entry_point: kubernetes_action.py
+parameter_delivery: stdin
+parameter_format: json
+output_format: json
+default_execution_permission_set_refs: [standard]
+parameters:
+  credential_key: {type: string, default: kubernetes.credentials, required: true}
+  kind: {type: string, enum: [Deployment, StatefulSet, DaemonSet], required: true}
+  namespace: {type: string}
+  name: {type: string, required: true}
+  confirm: {type: string, required: true}
+  propagation_policy: {type: string, enum: [Background, Foreground, Orphan], default: Background}
+  grace_period_seconds: {type: integer, minimum: 0, maximum: 3600, default: 30}
+  resource_version: {type: string}
+  dry_run: {type: boolean, default: false}
+  request_timeout_seconds: {type: integer, minimum: 1, maximum: 300, default: 30}
+  max_output_bytes: {type: integer, minimum: 1024, maximum: 4194304, default: 1048576}
+output:
+  operation: {type: string}
+  data: {type: any}
+  meta: {type: object}
+tags: [kubernetes, workload, delete, destructive]

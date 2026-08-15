@@ -1,0 +1,28 @@
+ref: kubernetes.pod_logs
+label: "Read Pod Logs"
+description: "Read bounded non-following logs from one Pod container"
+enabled: true
+runner_type: python
+runtime_version: ">=3.10"
+entry_point: kubernetes_action.py
+parameter_delivery: stdin
+parameter_format: json
+output_format: json
+default_execution_permission_set_refs: [standard]
+parameters:
+  credential_key: {type: string, default: kubernetes.credentials, required: true}
+  namespace: {type: string}
+  name: {type: string, required: true}
+  container: {type: string}
+  previous: {type: boolean, default: false}
+  tail_lines: {type: integer, minimum: 1, maximum: 10000, default: 500}
+  since_seconds: {type: integer, minimum: 1, maximum: 604800}
+  timestamps: {type: boolean, default: false}
+  max_log_bytes: {type: integer, minimum: 1, maximum: 4194304, default: 1048576}
+  request_timeout_seconds: {type: integer, minimum: 1, maximum: 300, default: 30}
+  max_output_bytes: {type: integer, minimum: 1024, maximum: 4194304, default: 1048576}
+output:
+  operation: {type: string}
+  data: {type: any}
+  meta: {type: object}
+tags: [kubernetes, pod, logs, read]
