@@ -10,7 +10,7 @@ parameter_format: json
 output_format: json
 default_execution_permission_set_refs: [standard]
 parameters:
-  credential_key: {type: string, default: kubernetes.credentials, required: true}
+  credential_key: {type: string, default: pack.kubernetes.credentials, required: true}
   kind: {type: string, enum: [Deployment, StatefulSet, DaemonSet], required: true}
   namespace: {type: string}
   label_selector: {type: string}

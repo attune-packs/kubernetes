@@ -364,7 +364,7 @@ def _call(function, *args, **kwargs):
 def _fetch_key(reference: str) -> dict[str, Any]:
     if (
         not isinstance(reference, str)
-        or not reference.startswith("kubernetes.")
+        or not reference.startswith("pack.kubernetes.")
         or len(reference) > 255
         or "\n" in reference
         or "\r" in reference
@@ -376,9 +376,7 @@ def _fetch_key(reference: str) -> dict[str, Any]:
         import attune
         from attune.api_client.api.secrets import get_key
 
-        response = get_key.sync_detailed(
-            client=attune.context.client, key_ref=reference
-        )
+        response = get_key.sync_detailed(reference, client=attune.context.client)
         if response.status_code != 200 or response.parsed is None:
             raise RuntimeError("key lookup failed")
         value = response.parsed.data.value
@@ -1461,7 +1459,7 @@ def execute_action(operation: str, params: dict[str, Any]) -> dict[str, Any]:
         raise KubernetesPackError("action parameters contain unsupported fields")
     request_timeout = _int(params, "request_timeout_seconds", 30, 1, 300)
     max_output = _int(params, "max_output_bytes", 1024 * 1024, 1024, 4 * 1024 * 1024)
-    credential = _fetch_key(params.get("credential_key", "kubernetes.credentials"))
+    credential = _fetch_key(params.get("credential_key", "pack.kubernetes.credentials"))
     with _connection(credential, request_timeout) as connection:
         return KubernetesService(connection, request_timeout, max_output).dispatch(
             operation, params

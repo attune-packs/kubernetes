@@ -8,6 +8,7 @@ import os
 import re
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -187,7 +188,7 @@ class MetadataTests(unittest.TestCase):
                 self.assertIn("default_execution_permission_set_refs: [standard]", text)
                 self.assertRegex(
                     text,
-                    r"credential_key: \{[^\n]*default: kubernetes\.credentials[^\n]*\}",
+                    r"credential_key: \{[^\n]*default: pack\.kubernetes\.credentials[^\n]*\}",
                 )
                 for output in ("operation", "data", "meta"):
                     self.assertRegex(text, rf"(?m)^  {output}: \{{type:")
@@ -229,6 +230,31 @@ class MetadataTests(unittest.TestCase):
 
 
 class CredentialTests(unittest.TestCase):
+    def test_key_lookup_uses_current_sdk_signature(self):
+        calls = {}
+        get_key = types.ModuleType("attune.api_client.api.secrets.get_key")
+
+        def sync_detailed(ref, *, client):
+            calls.update(ref=ref, client=client)
+            data = types.SimpleNamespace(value={"server": "https://api.example.invalid"})
+            return types.SimpleNamespace(status_code=200, parsed=types.SimpleNamespace(data=data))
+
+        get_key.sync_detailed = sync_detailed
+        secrets = types.ModuleType("attune.api_client.api.secrets")
+        secrets.get_key = get_key
+        attune = types.ModuleType("attune")
+        attune.context = types.SimpleNamespace(client="execution-client")
+        modules = {
+            "attune": attune,
+            "attune.api_client": types.ModuleType("attune.api_client"),
+            "attune.api_client.api": types.ModuleType("attune.api_client.api"),
+            "attune.api_client.api.secrets": secrets,
+        }
+        with mock.patch.dict(sys.modules, modules):
+            value = client._fetch_key("pack.kubernetes.credentials")
+        self.assertEqual(value["server"], "https://api.example.invalid")
+        self.assertEqual(calls, {"ref": "pack.kubernetes.credentials", "client": "execution-client"})
+
     def test_direct_credentials_require_https_identity_and_auth(self):
         valid = client._credential(
             {
@@ -608,7 +634,7 @@ class OperationTests(unittest.TestCase):
             "secret_write",
             {
                 "name": "login",
-                "secret_key": "kubernetes.secret.login",
+                "secret_key": "pack.kubernetes.secret_login",
                 "mode": "update",
                 "resource_version": "30",
                 "confirm": "apps/login",

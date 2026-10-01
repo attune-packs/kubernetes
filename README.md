@@ -15,7 +15,7 @@ proxy, impersonation, unrestricted generic mutation, or cross-namespace list.
 
 - Python 3.10 or newer on the selected Attune worker.
 - Network access from the worker to an HTTPS Kubernetes API server.
-- An encrypted, pack-owned Attune Key, normally `kubernetes.credentials`.
+- An encrypted, pack-owned Attune Key, normally `pack.kubernetes.credentials`.
 - Kubernetes RBAC limited to the actions and namespaces that worker needs.
 
 The pack never creates or elevates RBAC. Kubernetes authorization and admission
@@ -25,7 +25,7 @@ privilege escalation, and service accounts outside credential policy.
 
 ## Credentials
 
-Actions accept only an Attune Key reference beginning with `kubernetes.`. They cannot override server,
+Actions accept only an Attune Key reference beginning with `pack.kubernetes.`. They cannot override server,
 cluster, context, bearer token, client certificate, or CA material.
 
 Direct token credentials:
